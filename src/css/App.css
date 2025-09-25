@@ -1,0 +1,55 @@
+.app-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #a855f7, #9333ea);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.header-box {
+  background-color: #fb7185;
+  border-radius: 1.5rem;
+  padding: 3rem 4rem;
+  margin-bottom: 4rem;
+  text-align: center;
+}
+
+.main-title {
+  color: black;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  margin-top: 0;
+}
+
+.sub-title {
+  color: black;
+  font-size: 1.5rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.custom-button {
+  background-color: #fb7185;
+  color: black;
+  font-size: 1.5rem;
+  padding: 1rem 3rem;
+  border: none;
+  border-radius: 9999px;
+}
+
+@media (min-width: 768px) {
+  .main-title {
+    font-size: 4rem;
+  }
+  .sub-title {
+    font-size: 2rem;
+  }
+}
