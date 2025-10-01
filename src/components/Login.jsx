@@ -9,11 +9,37 @@ const Login = () => {
         e.preventDefault();
         // the console.log is handling the login information for users
         console.log('Email:', email);
-        console.log('Password
+        console.log('Password' , password);
         };
 
-
+        //where the user will enter their emailadress
 return (
     <div className="login-container">
-        <h2>Login</h2>
-);
+        <h2>Login Here</h2>
+        <form onSubmit={handleSubmit}>
+            <label>Enter Email</label>
+            <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email!"
+            required
+            />
+
+
+
+            <label>Enter Password</label>
+            <input
+            type="password"
+            value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password!"
+                required
+                />
+                <button type="submit">Submit</button>
+                </form>
+                </div>
+            );
+        };
+ export default Login;
+

@@ -1,6 +1,6 @@
 import React from 'react';
 import Button from './Button.jsx';
-import ResumeList from './ResumeList.jsx';
+import ResumeList from './Welcome.jsx';
 import JobDescription from './JobDescription.jsx';
 import ProjectList from './ProjectList.jsx';
 import Project from './Project.jsx';
