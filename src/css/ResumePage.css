@@ -1,0 +1,73 @@
+/* src/css/ResumePage.css */
+.resume-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #ffc1e3, #f9a8d4);
+  padding: 2rem;
+  font-family: sans-serif;
+}
+
+.resume-header {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #be185d;
+  margin-bottom: 2rem;
+  text-shadow: 1px 1px 3px #ec4899;
+}
+
+.resume-container {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  width: 100%;
+  max-width: 1440px; /* standard webpage width */
+  min-height: 600px;
+}
+
+.resume-sidebar,
+.resume-content {
+  background: #ffe4f0;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  flex: 1;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+}
+
+.resume-sidebar h2,
+.resume-content h2 {
+  margin-top: 0;
+  color: #ec4899;
+}
+
+.resume-sidebar input[type="file"] {
+  margin: 1rem 0;
+}
+
+.resume-sidebar button {
+  background-color: #f472b6;
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.resume-sidebar button:hover {
+  background-color: #be185d;
+}
+
+.feedback-box {
+  white-space: pre-wrap;
+  background: #ffd6eb;
+  padding: 1rem;
+  border-radius: 1rem;
+  height: 100%;
+  overflow-y: auto;
+}
