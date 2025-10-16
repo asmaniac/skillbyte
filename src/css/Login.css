@@ -1,50 +1,70 @@
 .login-container {
-  width: 100%;
-  height: 100vh;
-  padding: 4rem 8rem;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  background-color: #f9a8d4;
-  font-family: 'Arial', sans-serif;
-  color: #111;
+  align-items: center;
+  width: 1280px; /* same as ResumePage */
+  margin: 2rem auto;
+  min-height: 100vh;
+  background: #FFB6E3; /* match your pink palette */
+  padding: 2rem;
+  box-sizing: border-box;
 }
 
-.login-container h2 {
-  font-size: 4rem;
+.login-title {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #931964; /* header color from palette */
   margin-bottom: 2rem;
-  color: #ff4ec7;
 }
 
-.login-container form {
-  display: flex;
-  flex-direction: row;
-  gap: 2rem;
+.login-form-wrapper {
   width: 100%;
-  justify-content: flex-start;
+  display: flex;
+  justify-content: center;
 }
 
-.login-container label {
+.login-form {
+  background: #E2A9F1; /* soft pink container */
+  padding: 2rem;
+  border-radius: 1.5rem;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.login-form label {
+  margin: 0.5rem 0 0.25rem;
   font-weight: bold;
-  margin-bottom: 0.5rem;
+  color: #AB438D; /* label color */
 }
 
-.login-container input {
-  padding: 1rem;
-  border-radius: 8px;
-  border: 1px solid #ff4ec7;
-  font-size: 1rem;
-  flex: 1; /* expands to fill available horizontal space */
-}
-
-.login-container button {
-  background-color: #ff4ec7;
-  color: white;
-  font-weight: bold;
-  font-size: 1.5rem;
-  padding: 1rem 2rem;
-  border-radius: 12px;
+.login-form input {
+  padding: 0.75rem;
+  border-radius: 1rem;
   border: none;
+  margin-bottom: 1rem;
+}
+
+.login-form button {
+  background-color: #FF66C4; /* button pink */
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
   cursor: pointer;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+.login-form button:hover {
+  background-color: #AB438D; /* hover accent */
+}
+
+@media (max-width: 1024px) {
+  .login-form-wrapper {
+    justify-content: center;
+    padding: 0 1rem;
+  }
 }

@@ -1,46 +1,58 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // import useNavigate
-import '../css/Login.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // to redirect after login
+import "../css/Login.css";
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const navigate = useNavigate(); // initialize navigation
+  // State to store the email input
+  const [email, setEmail] = useState("");
+  // State to store the password input
+  const [password, setPassword] = useState("");
 
+  // create navigate function
+  const navigate = useNavigate();
+
+  // Function that handles form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     // the console.log is handling the login information for users
-    console.log('Email:', email);
-    console.log('Password:', password);
-
+    console.log("Email:", email);
+    console.log("Password:", password);
+    
     // Redirect to ResumePage after login
-    navigate('/resume');
+    navigate("/resume");
   };
-// classname added to div for styling
+
+  // where the user will enter their email and password
   return (
-    <div className="login-container"> 
-      <h2>Login Here</h2>
-      <form onSubmit={handleSubmit}>
-        <label>Enter Email</label>
-        <input
-          type="email" 
-          value={email}
-          onChange={(e) => setEmail(e.target.value)} // added onchange to update state
-          placeholder="Enter your email!"
-          required
-        />
+    <div className="login-container">
+      <h1 className="login-title">SKILLBYTE LOGIN</h1>
 
-        <label>Enter Password</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Enter your password!"
-          required
-        />
+      <div className="login-form-wrapper">
+        <form className="login-form" onSubmit={handleSubmit}>
+          {/* Email Input */}
+          <label>Enter Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email!"
+            required
+          />
 
-        <button type="submit">Submit</button>
-      </form>
+          {/* Password Input */}
+          <label>Enter Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter your password!"
+            required
+          />
+
+          {/* Submit button */}
+          <button type="submit">Login</button>
+        </form>
+      </div>
     </div>
   );
 };

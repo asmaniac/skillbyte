@@ -1,21 +1,22 @@
-import React from 'react';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import "../css/Welcome.css";
 
-import {Link} from 'react-router-dom';
-import '../css/Welcome.css';
+const Welcome = () => {
+  const navigate = useNavigate();
 
-const Welcome =() => {
-    return (
-        <div className="welcome-container">
-            <h1>"Welcome to SkillByte!"</h1>
-            <p>Your one-stop solution for crafting tailored resumes and cover letters to land your dream job.</p>
+  return (
+    <div className="welcome-page">
+      <header className="welcome-header">SKILLBYTE!</header>
+      <h2 className="welcome-subheader">Your Personal Resume Builder!</h2>
 
+      <div className="welcome-container">
+        <button className="login-btn" onClick={() => navigate("/login")}>
+          Login
+        </button>
+      </div>
+    </div>
+  );
+};
 
-
-            {/*link to dashboard*/}
-            <div className="welcome-buttons">
-            <Link to="/login" className="btn">Login</Link>
-            </div>
-        </div>
-    )
-}
 export default Welcome;

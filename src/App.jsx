@@ -1,8 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Welcome from "./components/Welcome.jsx";
-import Login from "./components/Login.jsx";
-import ResumePage from "./components/ResumePage.jsx";
+import Welcome from "./components/Welcome";
+import Login from "./components/Login";
+import ResumePage from "./components/ResumePage";
 
 const App = () => {
   return (

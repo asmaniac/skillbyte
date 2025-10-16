@@ -1,83 +1,59 @@
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  font-family: 'Arial', sans-serif;
-}
-
-.welcome-container {
-  width: 100%;
-  min-height: 100vh; /* fills full viewport height */
-  padding: 2rem;
-  box-sizing: border-box;
-  background-color: #f9a8d4; /* soft pink background */
+/* Outer page container */
+.welcome-page {
+  width: 100vw;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #FFB6E3, #FF66C4);
   display: flex;
   flex-direction: column;
-  justify-content: center; /* centers content vertically */
-  align-items: center;     /* centers content horizontally */
-  text-align: center;
-  color: #111;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+  box-sizing: border-box;
 }
 
-.welcome-container h1 {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-  color: #ff4ec7; /* bright pink */
-}
-
-.welcome-container p {
-  font-size: 1.5rem;
-  max-width: 900px;
-  margin-bottom: 3rem;
-  line-height: 1.6;
-  color: #fb7185; /* medium pink */
-}
-
-.welcome-buttons {
-  display: flex;
-  gap: 1.5rem;
-}
-
-.welcome-buttons a.btn {
-  background-color: #ff4ec7; /* bright pink */
-  color: white;
-  font-size: 1.3rem;
+/* Header at the top */
+.welcome-header {
+  font-size: 3rem;
   font-weight: bold;
-  padding: 1rem 3rem;
-  border-radius: 50px;
-  text-decoration: none;
-  display: inline-block;
+  color: #AB438D;
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
-@media (max-width: 800px) {
-  .welcome-container h1 {
-    font-size: 3rem;
-  }
-
-  .welcome-container p {
-    font-size: 1.2rem;
-  }
-
-  .welcome-buttons a.btn {
-    padding: 0.75rem 2rem;
-    font-size: 1.1rem;
-  }
+/* Subheader below header */
+.welcome-subheader {
+  font-size: 1.5rem;
+  color: #C53E91;
+  margin-bottom: 3rem;
+  text-align: center;
 }
 
+/* Container for buttons (centered like ResumePage) */
+.welcome-container {
+  display: flex;
+  gap: 2rem;
+}
 
-/* Responsive tweaks */
-@media (max-width: 1024px) {
-  .welcome-container h1 {
-    font-size: 3rem;
-  }
+/* Buttons */
+.login-btn {
+  background-color: #FF66C4;
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 1.25rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
 
-  .welcome-container p {
-    font-size: 1.2rem;
-  }
+.login-btn:hover {
+  background-color: #AB438D;
+}
 
-  .welcome-buttons a.btn {
-    padding: 0.75rem 2rem;
-    font-size: 1.1rem;
+/* Responsive for smaller screens */
+@media (max-width: 768px) {
+  .welcome-container {
+    flex-direction: column;
   }
 }
