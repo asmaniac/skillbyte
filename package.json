@@ -1,0 +1,24 @@
+{
+	"name": "skillbyte-root",
+	"private": true,
+	"version": "0.0.0",
+	"scripts": {
+		"dev": "concurrently \"node server.js\" \"npm --prefix ./skillbyte run dev\"",
+		"start": "node server.js"
+	},
+	"dependencies": {
+		"axios": "^1.12.2",
+		"cors": "^2.8.5",
+		"dotenv": "^17.2.3",
+		"express": "^5.1.0",
+		"multer": "^2.0.2",
+		"node-fetch": "^3.3.2",
+		"openai": "^6.4.0",
+		"pdf-parse": "^2.4.5",
+		"pdfjs-dist": "^5.4.296"
+	},
+	"tesseract.js": "^4.0.2",
+	"devDependencies": {
+		"concurrently": "^8.2.0"
+	}
+}
