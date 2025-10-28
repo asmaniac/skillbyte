@@ -1,0 +1,6 @@
+{
+  "installCommand": "cd skillbyte && (npm ci || npm install)",
+  "buildCommand": "cd skillbyte && npm run build",
+  "outputDirectory": "skillbyte/dist"
+}
+
