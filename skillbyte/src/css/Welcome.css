@@ -1,0 +1,59 @@
+/* Outer page container */
+.welcome-page {
+  width: 100vw;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #FFB6E3, #FF66C4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+  box-sizing: border-box;
+}
+
+/* Header at the top */
+.welcome-header {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #AB438D;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Subheader below header */
+.welcome-subheader {
+  font-size: 1.5rem;
+  color: #C53E91;
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+/* Container for buttons (centered like ResumePage) */
+.welcome-container {
+  display: flex;
+  gap: 2rem;
+}
+
+/* Buttons */
+.login-btn {
+  background-color: #FF66C4;
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 1.25rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-btn:hover {
+  background-color: #AB438D;
+}
+
+/* Responsive for smaller screens */
+@media (max-width: 768px) {
+  .welcome-container {
+    flex-direction: column;
+  }
+}

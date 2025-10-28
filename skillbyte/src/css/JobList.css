@@ -1,0 +1,62 @@
+/* Job List Page Styles */
+.job-list-page {
+  width: 100vw;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #FFB6E3, #FF66C4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 0;
+  box-sizing: border-box;
+}
+
+.job-list-header {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #6b21a8; /* purple accent */
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.job-list-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  width: 90%;
+  max-width: 1440px;
+  justify-content: center;
+}
+
+.job-card {
+  background: linear-gradient(180deg, #FFE4F0, #F3E8FF); /* pink -> light purple */
+  padding: 2rem;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(107,33,168,0.08);
+  box-shadow: 0 6px 20px rgba(107,33,168,0.08);
+  min-width: 300px;
+  max-width: 400px;
+  flex: 1 1 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.job-card h2 {
+  margin-top: 0;
+  color: #6b21a8; /* purple title */
+}
+
+.job-card p {
+  margin: 0.5rem 0;
+  color: #5b21a8; /* deep purple for text accents */
+}
+
+@media (max-width: 768px) {
+  .job-list-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .job-card {
+    max-width: 90vw;
+  }
+}

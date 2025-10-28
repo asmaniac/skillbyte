@@ -1,0 +1,70 @@
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 1280px; /* same as ResumePage */
+  margin: 2rem auto;
+  min-height: 100vh;
+  background: #FFB6E3; /* match your pink palette */
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.login-title {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #931964; /* header color from palette */
+  margin-bottom: 2rem;
+}
+
+.login-form-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.login-form {
+  background: #E2A9F1; /* soft pink container */
+  padding: 2rem;
+  border-radius: 1.5rem;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.login-form label {
+  margin: 0.5rem 0 0.25rem;
+  font-weight: bold;
+  color: #AB438D; /* label color */
+}
+
+.login-form input {
+  padding: 0.75rem;
+  border-radius: 1rem;
+  border: none;
+  margin-bottom: 1rem;
+}
+
+.login-form button {
+  background-color: #FF66C4; /* button pink */
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+.login-form button:hover {
+  background-color: #AB438D; /* hover accent */
+}
+
+@media (max-width: 1024px) {
+  .login-form-wrapper {
+    justify-content: center;
+    padding: 0 1rem;
+  }
+}

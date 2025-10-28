@@ -1,0 +1,228 @@
+/* Outer page container */
+.resume-page {
+  width: 100vw; /* full viewport width */
+  min-height: 100vh;
+  background: linear-gradient(135deg, #FFB6E3, #FF66C4); /* updated pink palette */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 0;
+  box-sizing: border-box;
+}
+
+/* Header at the top */
+.resume-header {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #AB438D; /* dark pink header */
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* Container for the two columns */
+.resume-container {
+  display: flex;
+  width: 90%;           /* fills most of the page */
+  max-width: 1440px;    /* standard full-width max */
+  gap: 2rem;            /* space between columns */
+}
+
+/* Columns */
+.column {
+  flex: 1;              /* take equal width */
+  background: #FFB6E3;  /* light pink background */
+  padding: 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  min-height: 500px;    /* reasonable height for visibility */
+}
+
+/* Upload column */
+.upload-column input[type="file"] {
+  margin: 1rem 0;
+}
+
+/* AI toggle styling */
+.upload-column input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  accent-color: #FF66C4;
+  cursor: pointer;
+}
+
+.upload-column label {
+  cursor: pointer;
+  user-select: none;
+}
+
+.upload-column button {
+  background-color: #FF66C4;
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  cursor: pointer;
+}
+
+.upload-column button:hover {
+  background-color: #AB438D;
+}
+
+/* Feedback column */
+.feedback-box {
+  background: #FFE4F0; /* slightly different pink for contrast */
+  padding: 1.5rem;
+  border-radius: 1rem;
+  flex-grow: 1;
+  height: 420px; /* fixed height so scrollbar appears */
+  overflow-y: auto;
+  white-space: pre-wrap;
+  color: #2b2b2b; /* darker text for readability */
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  line-height: 1.6;
+}
+
+/* Feedback sections */
+.feedback-box > div {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(171, 67, 141, 0.1);
+}
+
+.feedback-box > div:last-child {
+  border-bottom: none;
+}
+
+/* Section headers with emoji */
+.feedback-box strong {
+  display: block;
+  margin: 1.25rem 0 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(171, 67, 141, 0.2);
+  color: #AB438D;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* Bullet points and suggestions */
+.feedback-box ul {
+  margin: 0.75rem 0;
+  padding-left: 1.25rem;
+  list-style-type: none;
+}
+
+.feedback-box li {
+  position: relative;
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.feedback-box li:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #FF66C4;
+}
+
+/* Code-like sections (bullet rewrites) */
+.feedback-box code {
+  display: block;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin: 0.75rem 0;
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  line-height: 1.5;
+}
+
+/* Quoted text (headlines) */
+.feedback-box blockquote {
+  margin: 0.5rem 0;
+  padding: 0.5rem 1rem;
+  border-left: 3px solid #FF66C4;
+  background: rgba(255, 255, 255, 0.3);
+  font-style: italic;
+}
+
+/* Feedback section styling */
+.feedback-box h3 {
+  margin: 1.5rem 0 0.5rem;
+  color: #AB438D;
+  font-size: 1.1rem;
+}
+
+.feedback-box ul {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.feedback-box li {
+  margin: 0.25rem 0;
+}
+
+/* Style section headers with emojis */
+.feedback-box strong {
+  display: block;
+  margin-top: 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(171, 67, 141, 0.2);
+  color: #AB438D;
+  font-size: 1.2rem;
+}
+
+/* Style code-like sections */
+.feedback-box code {
+  display: block;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin: 0.5rem 0;
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+/* Webkit scrollbar styling (optional) */
+.feedback-box::-webkit-scrollbar {
+  width: 10px;
+}
+.feedback-box::-webkit-scrollbar-thumb {
+  background: rgba(107,33,168,0.25);
+  border-radius: 6px;
+}
+
+.column h2 {
+  margin-top: 0;
+  color: #C53E91; /* medium pink headings */
+}
+
+/* Job listings button */
+.feedback-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.job-listings-button {
+  margin-top: auto; /* pushes button to bottom */
+  background-color: #FF66C4;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.job-listings-button:hover {
+  background-color: #AB438D;
+}
+
+/* Responsive: stack columns vertically on small screens */
+@media (max-width: 768px) {
+  .resume-container {
+    flex-direction: column;
+  }
+}
