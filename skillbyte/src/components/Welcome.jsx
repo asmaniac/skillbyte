@@ -14,6 +14,9 @@ const Welcome = () => {
         <button className="login-btn" onClick={() => navigate("/login")}>
           Login
         </button>
+        <button className="about-btn" onClick={() => navigate("/about")}>
+          About
+        </button>
       </div>
     </div>
   );

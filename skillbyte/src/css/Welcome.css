@@ -35,7 +35,7 @@
 }
 
 /* Buttons */
-.login-btn {
+.login-btn, .about-btn {
   background-color: #FF66C4;
   color: white;
   font-weight: bold;
@@ -47,7 +47,7 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.login-btn:hover {
+.login-btn:hover, .about-btn:hover {
   background-color: #AB438D;
 }
 
