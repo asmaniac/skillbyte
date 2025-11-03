@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/ResumePage.css";
-
+import { useAI } from "../hooks/useAI";
+import { extractDetailedSkills, determineExperienceLevel, generateJobMatches } from "../utils/analysisUtils";
 
 const ResumePage = () => {
   const navigate = useNavigate();
@@ -10,8 +11,18 @@ const ResumePage = () => {
   const [loading, setLoading] = useState(false);
   const [lastSkills, setLastSkills] = useState([]);
   const [lastText, setLastText] = useState("");
+  const [jobMatches, setJobMatches] = useState([]);
+  const [currentStep, setCurrentStep] = useState(1); // Track user progress
 
-  const handleFileChange = (e) => setFile(e.target.files[0]);
+  // Hook that calls OpenAI directly. See src/hooks/useAI.js and src/services/aiService.js
+  const { analyze } = useAI();
+
+  const API_URL = "http://localhost:5001";
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+    setCurrentStep(2); // Move to step 2 when file is selected
+  };
 
   const extractTextFromFile = (file) => {
     return new Promise((resolve, reject) => {
@@ -27,7 +38,7 @@ const ResumePage = () => {
         return;
       }
 
-      // Images: use tesseract.js via dynamic import
+      // Images
       if (file.type.startsWith("image/") || name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".jpeg")) {
         const reader = new FileReader();
         reader.onload = async () => {
@@ -45,16 +56,17 @@ const ResumePage = () => {
         return;
       }
 
-      // PDFs: parse in-browser using pdfjs-dist (dynamic import)
+      // PDFs
       if (file.type === "application/pdf" || name.endsWith(".pdf")) {
         const reader = new FileReader();
         reader.onload = async () => {
           try {
             const arrayBuffer = reader.result;
             const pdfjs = await import('pdfjs-dist/legacy/build/pdf');
-            // Set workerSrc to a CDN-hosted worker to avoid Vite import-resolution issues.
-            // If you prefer to ship the worker locally, point this to a local asset.
-            pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.9.179/build/pdf.worker.min.js';
+            // Use a worker version that matches the loaded pdfjs package version to avoid
+            // "API version does not match the Worker version" errors seen in some setups.
+            const workerVersion = pdfjs.version || 'latest';
+            pdfjs.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${workerVersion}/build/pdf.worker.min.js`;
             const loadingTask = pdfjs.getDocument({ data: arrayBuffer });
             const pdf = await loadingTask.promise;
             let fullText = '';
@@ -66,7 +78,13 @@ const ResumePage = () => {
             }
             resolve(fullText);
           } catch (err) {
-            reject(err);
+            console.error('PDF parsing error:', err);
+            // Improve the error message for common version mismatch issues
+            if (err && err.message && err.message.includes('Worker version')) {
+              reject(new Error('PDF parsing failed: pdfjs worker version mismatch. Try clearing cache or ensure pdfjs-dist versions match.'));
+            } else {
+              reject(err);
+            }
           }
         };
         reader.onerror = (e) => reject(e);
@@ -78,240 +96,265 @@ const ResumePage = () => {
     });
   };
 
-  const simpleTechAnalyzer = (text) => {
-    const techMap = {
-      JavaScript: ["javascript", "js", "ecmascript"],
-      React: ["react", "reactjs"],
-      Node: ["node", "node.js", "express"],
-      Python: ["python", "django", "flask", "numpy", "pandas"],
-      Java: ["java", "spring"],
-      AWS: ["aws", "amazon web services", "s3", "ec2", "lambda"],
-      Docker: ["docker"],
-      SQL: ["sql", "mysql", "postgres", "postgresql", "sqlite"],
-      TypeScript: ["typescript", "ts"],
-      Kubernetes: ["kubernetes", "k8s"]
-    };
-    const found = [];
-    const low = (text || "").toLowerCase();
-    Object.entries(techMap).forEach(([k, terms]) => {
-      for (const t of terms) {
-        if (low.includes(t)) {
-          found.push(k);
-          break;
-        }
-      }
-    });
-    const unique = Array.from(new Set(found));
-    const result = {
-      skills: unique,
-      summary:
-        unique.length === 0
-          ? "No clear tech keywords found. Consider adding a dedicated skills section with languages, frameworks, and tools."
-          : `Detected skills: ${unique.join(', ')}.`,
-    };
-    return result;
-  };
-
-  // Role-specific templates and suggestions
-  const roleTemplates = {
-    frontend: {
-      headline: "Frontend Developer specializing in React and responsive UI/UX",
-      skills: ["React", "JavaScript", "TypeScript", "CSS", "HTML5", "Redux"],
-      bullets: [
-        "• Built responsive React components used by 50K+ daily users, improving load times by 40%",
-        "• Implemented client-side state management that reduced API calls by 60%",
-        "• Created reusable UI component library used across 5 internal projects"
-      ]
-    },
-    backend: {
-      headline: "Backend Developer with expertise in Node.js and API design",
-      skills: ["Node.js", "Express", "MongoDB", "PostgreSQL", "Docker", "REST APIs"],
-      bullets: [
-        "• Designed RESTful APIs handling 1M+ daily requests with 99.9% uptime",
-        "• Optimized database queries reducing response time by 70%",
-        "• Containerized microservices reducing deployment time by 80%"
-      ]
-    },
-    fullstack: {
-      headline: "Full Stack Developer bridging frontend UX with scalable backends",
-      skills: ["React", "Node.js", "TypeScript", "PostgreSQL", "AWS", "Docker"],
-      bullets: [
-        "• Developed full-stack features used by 100K+ users monthly",
-        "• Reduced infrastructure costs by 40% through AWS optimization",
-        "• Led migration to TypeScript improving bug detection by 60%"
-      ]
-    },
-    data: {
-      headline: "Data Engineer specializing in ETL pipelines and analytics",
-      skills: ["Python", "SQL", "Pandas", "Apache Spark", "AWS", "Airflow"],
-      bullets: [
-        "• Built ETL pipeline processing 500GB+ daily with 99.9% accuracy",
-        "• Reduced data processing time by 70% using parallel computing",
-        "• Created analytics dashboard saving 20 hours weekly in reporting"
-      ]
-    }
-  };
-
-  // Generate richer, AI-like feedback with role targeting
-  const generateFeedback = (text) => {
-    const lines = (text || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-    const summaryLine = lines.find(l => /summary/i.test(l)) || lines[0] || '';
-    const tech = simpleTechAnalyzer(text);
-
-    // Detect role focus based on skills
-    const roleMatches = {
-      frontend: tech.skills.filter(s => ['JavaScript', 'React', 'TypeScript', 'CSS'].includes(s)).length,
-      backend: tech.skills.filter(s => ['Node', 'Python', 'Java', 'SQL', 'Docker'].includes(s)).length,
-      data: tech.skills.filter(s => ['Python', 'SQL', 'AWS'].includes(s)).length
-    };
-    const bestRole = Object.entries(roleMatches)
-      .sort(([,a], [,b]) => b - a)[0][0];
-    const template = roleTemplates[bestRole];
-
-    // Detect experiences / bullets heuristically
-    const bullets = lines
-      .filter(l => /^[-*\u2022\s]/.test(l) || /\b(managed|developed|built|implemented|led|created|designed|improved)\b/i)
-      .slice(0, 6);
-
-    // Generate headline suggestion
-    const name = lines[0]?.replace(/\b(resume|cv)\b/gi, '').trim() || '';
-    const headlineSuggestions = [
-      template.headline,
-      `${bestRole.charAt(0).toUpperCase() + bestRole.slice(1)} Developer with ${tech.skills.slice(0,2).join(' & ')} expertise`,
-      `${tech.skills[0] || 'Software'} Developer passionate about ${tech.skills.slice(1,3).join(' & ') || 'building great products'}`
-    ];
-
-    // Suggest rewrites for up to 3 bullets
-    const bulletRewrites = [];
-    bullets.slice(0, 3).forEach(bullet => {
-      const original = bullet.replace(/^[-*\u2022\s]+/, '');
-      // Try to extract a verb and object
-      const m = original.match(/(\b(created|built|developed|designed|improved|led|implemented|managed|optimized)\b)\s+(.*)/i);
-      if (m) {
-        const verb = m[1];
-        const rest = m[3].replace(/\b(for|to|using)\b.*/i, '').trim();
-        bulletRewrites.push({
-          original,
-          suggestions: [
-            `• ${verb} ${rest} reducing load time by 40% and improving user satisfaction`,
-            `• ${verb} ${rest} serving 50K+ daily active users with 99.9% uptime`,
-            `• ${verb} ${rest} resulting in 30% increase in developer productivity`
-          ]
-        });
-      }
-    });
-
-    // Format feedback sections
-    const sections = [];
-
-    sections.push('💡 Quick Summary');
-    sections.push(`Your resume suggests a ${bestRole} focus. Here's a quick analysis:`);
-    sections.push(`- ${summaryLine ? 'Found summary but could be more impactful' : 'No clear summary found'}`);
-    sections.push(`- ${bullets.length} achievement bullets found (${bullets.length >= 3 ? 'good!' : 'add more'})`);
-    sections.push(`- ${tech.skills.length} relevant skills detected\n`);
-
-    sections.push('✨ Suggested Headlines');
-    sections.push('Try one of these concise, role-focused headlines:');
-    headlineSuggestions.forEach(h => sections.push(`"${h}"`));
-    sections.push('');
-
-    if (bulletRewrites.length > 0) {
-      sections.push('📝 Achievement Bullet Improvements');
-      sections.push('Make achievements concrete with metrics:');
-      bulletRewrites.forEach(({original, suggestions}) => {
-        sections.push(`Original: ${original}`);
-        sections.push('Suggestions:');
-        suggestions.forEach(s => sections.push(s));
-        sections.push('');
-      });
-    }
-
-    sections.push('🎯 Role-Specific Tips');
-    sections.push(`For ${bestRole} roles, emphasize:`);
-    sections.push(`- Key skills: ${template.skills.join(', ')}`);
-    sections.push('- Example achievement:');
-    sections.push(template.bullets[0]);
-    sections.push('');
-
-    sections.push('✅ Next Steps');
-    sections.push('1. Add a clear headline at the top');
-    sections.push('2. Ensure each bullet shows concrete impact (metrics)');
-    sections.push(`3. Highlight these skills: ${tech.skills.slice(0,4).join(', ')}`);
-    sections.push('4. Keep resume focused and under one page\n');
-
-    return sections.join('\n');
-  };
+  // NOTE: analyze() is provided by the useAI hook and calls OpenAI directly.
+  // For production you should prefer a backend or serverless function to keep your
+  // API key secret. See src/services/aiService.js for the client-side implementation.
 
   const handleAnalyze = async () => {
     if (!file) {
-      setFeedback("Please upload a TXT, PNG or JPG file first.");
+      setFeedback("⚠️ Please upload a resume file first.");
       return;
     }
 
     setLoading(true);
-    setFeedback("");
+    setCurrentStep(3); // Move to analysis step
+    setFeedback("📄 Extracting text from your resume...");
+    
     try {
       const text = await extractTextFromFile(file);
+      
       if (!text || text.trim().length === 0) {
-        setFeedback("Uploaded file contains no readable text. Try a TXT file or a clearer image.");
+        setFeedback("⚠️ Could not read text from file. Try a different format or ensure the image is clear.");
         setLoading(false);
+        setCurrentStep(2);
         return;
       }
+      setFeedback("🤖 AI is analyzing your resume and career potential...");
 
-      // Pure frontend analysis only
+      // Compute skills & job matches locally (same logic as backend used before)
+      const skills = extractDetailedSkills(text);
+      const experienceLevel = determineExperienceLevel(text);
+      const localJobMatches = generateJobMatches(skills, experienceLevel);
+
       try {
-        const generated = generateFeedback(text);
-        const preview = text.slice(0, 300);
-        const aiFeedback = `${generated}\n\nExtracted text preview:\n${preview}...`;
+        const result = await analyze(text); // calls OpenAI directly via the hook
 
-        const analysisForState = simpleTechAnalyzer(text);
-        setLastSkills(analysisForState.skills || []);
+        setLastSkills(skills || []);
         setLastText(text || "");
-        setFeedback(aiFeedback);
-      } catch (err) {
-        console.error('Analysis error:', err);
-        setFeedback('Analysis failed: ' + (err.message || err));
+        setJobMatches(localJobMatches || []);
+        setFeedback(result.feedback || "No feedback returned from AI.");
+        setCurrentStep(4); // Move to results step
+      } catch (apiError) {
+        console.error('AI error:', apiError);
+        setFeedback(
+          `⚠️ ${apiError.message}\n\n` +
+          `If you prefer a safer setup, run the analysis through your backend server at ${API_URL}/analyze`
+        );
+        setCurrentStep(2);
       }
     } catch (err) {
-      console.error(err);
-      setFeedback("Error analyzing the file: " + (err.message || err));
+      console.error('File extraction error:', err);
+      setFeedback("❌ Error reading file: " + (err.message || err));
+      setCurrentStep(2);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleStartOver = () => {
+    setFile(null);
+    setFeedback("");
+    setLastSkills([]);
+    setLastText("");
+    setJobMatches([]);
+    setCurrentStep(1);
+  };
+
+  // Progress indicator component
+  const ProgressSteps = () => (
+    <div style={{ 
+      display: 'flex', 
+      justifyContent: 'center', 
+      marginBottom: '2rem',
+      gap: '1rem'
+    }}>
+      {['Upload', 'Analyze', 'Results', 'Next Steps'].map((step, index) => (
+        <div key={index} style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem'
+        }}>
+          <div style={{
+            width: '30px',
+            height: '30px',
+            borderRadius: '50%',
+            backgroundColor: currentStep > index ? '#5b21a8' : '#e5e7eb',
+            color: currentStep > index ? 'white' : '#6b7280',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontWeight: 'bold',
+            fontSize: '14px'
+          }}>
+            {index + 1}
+          </div>
+          <span style={{
+            color: currentStep > index ? '#5b21a8' : '#6b7280',
+            fontWeight: currentStep === index + 1 ? 'bold' : 'normal',
+            fontSize: '14px'
+          }}>
+            {step}
+          </span>
+          {index < 3 && <span style={{ color: '#d1d5db' }}>→</span>}
+        </div>
+      ))}
+    </div>
+  );
+
   return (
     <div className="resume-page">
-      <header className="resume-header">Resume Builder</header>
+      <header className="resume-header">
+        🎓 Career Path Analyzer for Students & Recent Grads
+      </header>
+
+      <ProgressSteps />
 
       <div className="resume-container">
         <div className="column upload-column">
-          <h2>Upload Your Resume</h2>
-          <input type="file" accept=".txt,text/plain,image/png,image/jpeg,.pdf" onChange={handleFileChange} />
-          <div style={{ marginBottom: '1rem', color: '#5b21a8' }}>
-            Upload your resume (PDF, TXT, PNG, JPG). We'll analyze it in your browser.
+          <h2>Step {currentStep === 1 ? '1' : '✓'}: Upload Your Resume</h2>
+          
+          {currentStep === 1 && (
+            <div style={{ marginBottom: '1rem', color: '#6b7280', fontSize: '14px' }}>
+              📝 <strong>New to resumes?</strong> That's okay! Upload any document that lists:
+              <ul style={{ textAlign: 'left', marginTop: '0.5rem' }}>
+                <li>Your education (school, courses, GPA)</li>
+                <li>Any jobs, internships, or volunteer work</li>
+                <li>Skills (even from school projects!)</li>
+                <li>Activities or clubs you've participated in</li>
+              </ul>
+            </div>
+          )}
+
+          <input 
+            type="file" 
+            accept=".txt,text/plain,image/png,image/jpeg,.pdf" 
+            onChange={handleFileChange}
+            disabled={loading}
+          />
+          
+          {file && (
+            <div style={{ 
+              marginTop: '1rem', 
+              padding: '0.75rem', 
+              backgroundColor: '#f0fdf4',
+              borderRadius: '8px',
+              color: '#166534'
+            }}>
+              ✓ File selected: <strong>{file.name}</strong>
+            </div>
+          )}
+
+          <div style={{ marginTop: '1rem', color: '#5b21a8', fontSize: '14px' }}>
+            Supported formats: PDF, TXT, PNG, JPG
           </div>
           
           <button 
             onClick={handleAnalyze} 
-            disabled={loading}
-            style={{ minWidth: '120px' }}
+            disabled={loading || !file}
+            style={{ 
+              minWidth: '160px',
+              marginTop: '1rem',
+              opacity: (!file || loading) ? 0.5 : 1,
+              cursor: (!file || loading) ? 'not-allowed' : 'pointer'
+            }}
           >
-            {loading ? 'Analyzing...' : 'Analyze'}
+            {loading ? '🔄 Analyzing...' : '🚀 Analyze My Resume'}
           </button>
+
+          {currentStep >= 4 && (
+            <button 
+              onClick={handleStartOver}
+              style={{ 
+                minWidth: '160px',
+                marginTop: '0.5rem',
+                backgroundColor: '#6b7280'
+              }}
+            >
+              ↻ Start Over
+            </button>
+          )}
         </div>
 
         <div className="column feedback-column">
-          <h2>AI Feedback</h2>
+         <h2>
+  {currentStep === 1 ? '💡 What You\'ll Get' :
+   currentStep === 2 ? '📋 Ready to Analyze' :
+   currentStep === 3 ? '⏳ Analyzing...' :
+   currentStep >= 4 ? '✨ Your Career Analysis' : ''}
+</h2>
+
+          
           <div className="feedback-box">
-            {feedback || "Upload a TXT file and click Analyze."}
+            {currentStep === 1 && !feedback && (
+              <div style={{ color: '#6b7280' }}>
+                <h3 style={{ color: '#5b21a8', marginBottom: '1rem' }}>Our AI will help you:</h3>
+                <ul style={{ textAlign: 'left', lineHeight: '1.8' }}>
+                  <li>✓ Identify your current skills and experience level</li>
+                  <li>✓ Find jobs that actually match your background</li>
+                  <li>✓ Get personalized next steps for your career</li>
+                  <li>✓ Discover free resources to build new skills</li>
+                  <li>✓ Understand what employers are looking for</li>
+                </ul>
+                <div style={{ 
+                  marginTop: '1.5rem', 
+                  padding: '1rem', 
+                  backgroundColor: '#fef3c7',
+                  borderRadius: '8px',
+                  color: '#92400e'
+                }}>
+                  <strong>💡 Pro tip:</strong> Even if you have no work experience, our AI can help you find a starting point!
+                </div>
+              </div>
+            )}
+            
+            {(currentStep >= 2 || feedback) && (
+              <div style={{ whiteSpace: 'pre-wrap' }}>
+                {feedback || "Upload your resume and click 'Analyze' to get started!"}
+              </div>
+            )}
           </div>
-          <button
-            className="job-listings-button"
-            onClick={() => navigate("/jobs", { state: { skills: lastSkills, text: lastText } })}
-          >
-            Go to Job Listings
-          </button>
+
+          {currentStep >= 4 && lastSkills.length > 0 && (
+            <button
+              className="job-listings-button"
+              onClick={() => navigate("/jobs", { 
+                state: { 
+                  skills: lastSkills, 
+                  text: lastText,
+                  jobMatches: jobMatches
+                } 
+              })}
+              style={{ marginTop: '1rem' }}
+            >
+              🎯 View Matched Jobs →
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Help section for confused users */}
+      <div style={{
+        maxWidth: '1200px',
+        margin: '2rem auto',
+        padding: '1.5rem',
+        backgroundColor: '#f9fafb',
+        borderRadius: '12px',
+        textAlign: 'left'
+      }}>
+        <h3 style={{ color: '#5b21a8', marginBottom: '1rem' }}>❓ Need Help?</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', fontSize: '14px' }}>
+          <div>
+            <strong>Don't have a resume?</strong>
+            <p style={{ color: '#6b7280', marginTop: '0.5rem' }}>
+              Create a simple text file listing your education, any jobs/volunteer work, and skills you have (even from school!).
+            </p>
+          </div>
+          <div>
+            <strong>No work experience?</strong>
+            <p style={{ color: '#6b7280', marginTop: '0.5rem' }}>
+              That's okay! Our AI will suggest entry-level paths and free ways to build skills that employers want.
+            </p>
+          </div>
         </div>
       </div>
     </div>
